@@ -30,11 +30,28 @@ final class BullseyeTests: XCTestCase {
         XCTAssertEqual(score, 95)
     }
         
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+    func testNewRound() throws {
+        game.startNewRound(points:100)
+        XCTAssertEqual(game.score, 100)
+        XCTAssertEqual(game.round, 2)
+    }
+    func testScoreExact(){
+        let guess = game.target
+        let score = game.points(sliderValue: guess)
+        XCTAssertEqual(score, 200)
+    }
+    func testScoreClose(){
+        let guess = game.target + 2
+        let score = game.points(sliderValue: guess)
+        XCTAssertEqual(score, 98 + 50)
+    }
+    func testRestart() throws {
+        game.startNewRound(points:100)
+        XCTAssertNotEqual(game.score, 0)
+        XCTAssertNotEqual(game.round, 1)
+        game.restart()
+        XCTAssertEqual(game.score, 0)
+        XCTAssertEqual(game.round, 1)
     }
 
 }
