@@ -19,10 +19,20 @@ struct ContentView: View {
             BackgroundView(game: $game)
             VStack {
                 InstructionsView(game: $game)
-                    .padding(.bottom, 100)
-                HitMeButton(alertIsVisable: $alertIsVisable, sliderValue: $sliderValue, game: $game)
+                    .padding(.bottom, alertIsVisable ? 0 : 100)
+                if alertIsVisable{
+                    PointsView(alertIsVisable: $alertIsVisable, sliderValue: $sliderValue, game: $game)
+                        .transition(.scale)
+                }else{
+                    HitMeButton(alertIsVisable: $alertIsVisable, sliderValue: $sliderValue, game: $game)
+                        .transition(.scale)
+                }
+                
             }
-            SliderView(sliderValue: $sliderValue)
+            if !alertIsVisable {
+                SliderView(sliderValue: $sliderValue)
+                    .transition(.scale)
+            }
         }
         
     }
@@ -60,7 +70,9 @@ struct HitMeButton: View {
         let roundedValue = Int(sliderValue.rounded())
         let points = game.points(sliderValue:roundedValue)
         Button(action: {
-            alertIsVisable = true
+            withAnimation{
+                alertIsVisable = true
+            }
         }) {
             Text("Hit me".uppercased())
             .bold()
@@ -74,19 +86,12 @@ struct HitMeButton: View {
                 LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.3), Color.clear]), startPoint: .top, endPoint: .bottom)
             }
         )
-        .cornerRadius(21.0)
+        .cornerRadius(Constants.General.roundRectCorerRadius)
         .overlay(
-            RoundedRectangle(cornerRadius: 21.0)
-                .strokeBorder(Color.white, lineWidth: 2.0)
+            RoundedRectangle(cornerRadius: Constants.General.roundRectCorerRadius)
+                .strokeBorder(Color.white, lineWidth: Constants.General.strokeWidth)
         )
-        .alert("Hello there!", isPresented: $alertIsVisable) {
-        Button("Awesome!") {
-                            game.startNewRound(points: points)
-        }
-        } message: {
-            
-            Text("The slider value is \(roundedValue).\n" + "You scored \(points) points this round.")
-        }
+        
         
     }
 }
